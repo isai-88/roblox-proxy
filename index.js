@@ -1,28 +1,26 @@
 const express = require("express");
-const cors = require("cors");
-
+const fetch = require("node-fetch"); // Si usas Node 18+ puedes usar fetch nativo
 const app = express();
+
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+app.get("/user/:userId", async (req, res) => {
+  const userId = req.params.userId;
 
-app.get("/api", async (req, res) => {
   try {
-    const { userId } = req.query;
-
-    const response = await fetch(`https://games.roblox.com/v1/users/${userId}/games`);
+    // Cambia esta URL si necesitas otro endpoint
+    const response = await fetch(`https://economy.roblox.com/v2/users/${userId}/inventory/34?limit=100&cursor=`);
     const data = await response.json();
-
     res.json(data);
   } catch (error) {
-    res.status(500).json({ error: "Error al obtener los datos" });
+    res.status(500).json({ error: "Error al obtener datos de Roblox" });
   }
 });
 
 app.get("/", (req, res) => {
-  res.send("Servidor Proxy para Roblox activo.");
+  res.send("Servidor Proxy activo.");
 });
 
 app.listen(PORT, () => {
-  console.log(`Servidor iniciado en http://localhost:${PORT}`);
+  console.log(`Servidor iniciado en puerto ${PORT}`);
 });
